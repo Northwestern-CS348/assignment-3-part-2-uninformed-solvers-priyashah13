@@ -16,3 +16,28 @@ fact: (pred obj1 obj2)
 rule: ((pred obj1 obj2) (pred obj2 obj3)) -> (pred obj1 obj3)
 
 """
+fact: (inst disk1 Disk)
+fact: (inst disk2 Disk)
+fact: (inst disk3 Disk)
+fact: (inst peg1 Peg)
+fact: (inst peg2 Peg)
+fact: (inst peg3 Peg)
+fact: (inst base1 Base)
+
+fact: (larger disk3 disk2)
+fact: (larger disk2 disk1)
+
+rule: ((larger ?x ?y) (larger ?y ?z)) -> (larger ?x ?z)
+rule: ((Top ?d ?p) (empty ?o)) -> (movable ?d ?p ?o)
+rule: ((Top ?d ?p) (Top ?e ?o) (larger ?e ?d)) -> (movable ?d ?p ?o)
+
+fact: (Top disk1 peg1)
+fact: (empty peg2)
+fact: (empty peg3)
+
+fact: (on disk1 peg1)
+fact: (on disk2 peg1)
+fact: (on disk3 peg1)
+
+fact: (onTop disk1 disk2)
+fact: (onTop disk2 disk3)
