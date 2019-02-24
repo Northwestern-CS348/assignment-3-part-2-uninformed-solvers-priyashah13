@@ -1,6 +1,6 @@
 
 from solver import *
-import pdb
+
 
 class SolverDFS(UninformedSolver):
     def __init__(self, gameMaster, victoryCondition):
@@ -22,12 +22,10 @@ class SolverDFS(UninformedSolver):
         # Student code goes here
 
         curr = self.currentState
-
         # check the base case
         # if the victory condition is met, just return True, and done.
         if curr.state == self.victoryCondition:
             return True
-
         # however, if the victory condition is not met, go through the DFS
         else:
             # get all movables that are possible form the current statement
@@ -46,7 +44,6 @@ class SolverDFS(UninformedSolver):
                     curr.children.append(next)
                     next.parent = curr
                     self.gm.reverseMove(move)
-        # self.unwalk()
         while len(curr.children) > curr.nextChildToVisit:
             # do the following while there are still children left to visit
             # go to the next child in the list of children
@@ -57,7 +54,6 @@ class SolverDFS(UninformedSolver):
             # walk the child using DFS
             if next not in self.visited:
                 self.walk(next)
-                # self.visited[newState] = True
                 if self.currentState.state == self.victoryCondition:
                     return True
                 break
@@ -98,5 +94,63 @@ class SolverBFS(UninformedSolver):
         Returns:
             True if the desired solution state is reached, False otherwise
         """
-        # Student code goes here
+
+        curr = self.currentState
+        # initial check for victory state
+        if curr.state == self.victoryCondition:
+            return True
+        # mark the currentState as visited
+        self.visited[curr] = True
+
+        # get all movables that are possible form the current statement
+        # same logic as DFS
+        movables = self.gm.getMovables()
+        # print(self.currentState.depth, movables)
+        if movables and not curr.children:
+            # same logic as DFS, for each move, store the game state as the children for the current state
+            for move in movables:
+                self.gm.makeMove(move)
+                newState = GameState(self.gm.getGameState(), curr.depth + 1, move)
+                newState.parent = curr
+                curr.children.append(newState)
+                # reverse the move
+                self.gm.reverseMove(move)
+        # go through the entire tree
+        self.search()
+        return False
+
+    def search(self):
+        # while a parent exists, and the currentState is the last sibling,
+        # go up the tree
+        while self.currentState.parent and len(self.currentState.parent.children)-1 == self.getIndex(self.currentState):
+            # reverse the move that was used to get to currentState
+            self.gm.reverseMove(self.currentState.requiredMovable)
+            # and update the current state to be the parent
+            self.currentState = self.currentState.parent
+        # we get out of the while loop when the child is not the last of the siblings
+        # we hit this case when a parent exists
+        # therefore, we want to move to the next sibling
+        if self.currentState.parent:
+            # must go up the tree one step,
+            # then we update the index to be one more than that of the current state
+            self.gm.reverseMove(self.currentState.requiredMovable)
+            next_index = self.getIndex(self.currentState)+1
+            # set the current state to be the next sibling using the new index
+            self.currentState = self.currentState.parent.children[next_index]
+            # make the move to actually update the KB to the sibling state
+            self.gm.makeMove(self.currentState.requiredMovable)
+        # while the current state is not visited and there are children, we want to move down the tree
+        while self.visited.get(self.currentState, False) and self.currentState.children:
+            firstChild = 0
+            # go down the tree using the left most child - therefore, i used the 0 index
+            self.currentState = self.currentState.children[firstChild]
+            # make move to update the KB
+            self.gm.makeMove(self.currentState.requiredMovable)
+        # search any unvisited nodes
+        if self.visited.get(self.currentState, False):
+            self.search()
         return True
+
+    def getIndex(self, state):
+        index = state.parent.children.index(state)
+        return index

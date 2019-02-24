@@ -70,8 +70,7 @@ class TowerOfHanoiGame(GameMaster):
 
         gameState = (tuple(peg1tuple), tuple(peg2tuple), tuple(peg3tuple))
 
-        # pdb.set_trace()
-        print(gameState)
+        # print(gameState)
         return gameState
 
         pass
@@ -108,15 +107,15 @@ class TowerOfHanoiGame(GameMaster):
         emptyTop = "fact: (empty " + oldp + ")"
 
         if underAns:
-            print("under moving disk")
-            print(underAns[0].bindings[0].constant)
+            # print("under moving disk")
+            # print(underAns[0].bindings[0].constant)
             retractonTop = "fact: (onTop " + disk + " " + str(underAns[0].bindings[0].constant) + ")"
             self.kb.kb_retract(parse_input(retractonTop))
             addNewTop = "fact: (Top " + str(underAns[0].bindings[0].constant) + " " + oldp + ")"
             self.kb.kb_assert(parse_input(addNewTop))
         else:
-            print("under moving disk")
-            print(False)
+            # print("under moving disk")
+            # print(False)
             self.kb.kb_assert(parse_input(emptyTop))
 
         retractOn = "fact: (on " + disk + " " + oldp + ")"
@@ -129,15 +128,15 @@ class TowerOfHanoiGame(GameMaster):
 
         # if there was a top, retract it before adding new top
         if under2Ans:
-            print("top of target peg:")
-            print(under2Ans[0].bindings[0].constant)
+            # print("top of target peg:")
+            # print(under2Ans[0].bindings[0].constant)
             retractTop2 = "fact: (Top " + str(under2Ans[0].bindings[0].constant) + " " + newp + ")"
             self.kb.kb_retract(parse_input(retractTop2))
             addonTopNew = "fact: (onTop " + disk + " " + str(under2Ans[0].bindings[0].constant) + ")"
             self.kb.kb_assert(parse_input(addonTopNew))
         else:
-            print("top of target peg:")
-            print(False)
+            # print("top of target peg:")
+            # print(False)
             emptyremove = "fact: (empty " + newp + ")"
             self.kb.kb_retract(parse_input(emptyremove))
 
